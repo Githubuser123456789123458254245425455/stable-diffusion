@@ -1,5 +1,23 @@
 """make variations of input image"""
+I always get the "Potential NSFW content was detected in one or more images. A black image will be returned instead. Try again with a different prompt and/or seed." error when using stable diffusion, even with the code that was given on huggingface:
 
+import torch
+from torch import autocast
+from diffusers import StableDiffusionPipeline
+
+model_id = "CompVis/stable-diffusion-v1-4"
+device = "cuda"
+token = 'MY TOKEN'
+
+
+pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16, revision="fp16", use_auth_token=token)
+pipe = pipe.to(device)
+
+prompt = "a photo of an astronaut riding a horse on mars"
+with autocast("cuda"):
+    image = pipe(prompt, guidance_scale=7.5).images[0]  
+    
+image.save("astronaut_rides_horse.png")
 import argparse, os, sys, glob
 import PIL
 import torch
